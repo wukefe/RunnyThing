@@ -47,7 +47,7 @@
 	    } else {
 	    addTag(code + " failed with:\n\t" + err.message +"\n" + "Run it on Firefox to know the location of the error.", output, true);
 	    }
-	    if (typeof epicBeep === "function") epicBeep();
+	    if (typeof failBeep === "function") failBeep();
     }};
 
     function cleanup() {
