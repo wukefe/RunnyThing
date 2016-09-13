@@ -47,9 +47,13 @@
     var evaluation = eval(code);
     addTag( code + " -->\n\t" + evaluation, output);
     } catch (err) {
-      addTag(code + " failed with:\n\t" + err.message +"\n" + "Line: " + err.lineNumber + " Col: " + err.columnNumber, output, true);
-      editor.doc.setCursor(err.lineNumber, err.columnNumber);
-      editor.focus();
+      if(err.lineNumber != undefined){
+            addTag(code + " failed with:\n\t" + err.message +"\n" + "Line: " + err.lineNumber + " Col: " + err.columnNumber, output, true);
+      	    editor.doc.setCursor(err.lineNumber, err.columnNumber);
+	    editor.focus();
+	    } else {
+	    addTag(code + " failed with:\n\t" + err.message +"\n" + "Run it on Firefox to know the location of the error.", output, true);
+	    }
       beep();
     }};
 
