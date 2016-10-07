@@ -1,4 +1,4 @@
-var count = 0;
+var rt_count = 0;
 var editor = CodeMirror.fromTextArea(document.getElementById("source"), {
     lineNumbers: true,
     matchBrackets: true,
@@ -29,31 +29,31 @@ function addTag(text, element, boom) {
 }
 
 function go(){
-    count++;
-    var show = document.getElementById("show_src").checked;
-    var fast = document.getElementById("fast_go").checked;
-    var output = document.getElementById("output");
-    var code = editor.getValue();
-    var libs = pre_editor.getValue();
-    var test = test_editor.getValue();
+    rt_count++;
+    var rt_show = document.getElementById("show_src").checked;
+    var rt_fast = document.getElementById("fast_go").checked;
+    var rt_output = document.getElementById("output");
+    var rt_code = editor.getValue();
+    var rt_libs = pre_editor.getValue();
+    var rt_test = test_editor.getValue();
 
-    if(fast){cleanup()};
+    if(rt_fast){cleanup()};
 
     try{
-	var evaluation = eval(libs+code+test);
+	var evaluation = eval(rt_libs+rt_code+rt_test);
 
-	if(show){
-	    addTag( code + " -->\n\t" + evaluation, output);
+	if(rt_show){
+	    addTag(rt_code + " -->\n\t" + evaluation, rt_output);
 	} else {
-	    addTag(count + "> " + evaluation, output);
+	    addTag(rt_count + "> " + evaluation, rt_output);
 	}
     } catch (err) {
 	if(err.lineNumber != undefined){
-            addTag(code + " failed with:\n\t" + err.message +"\n" + "Line: " + err.lineNumber + " Col: " + err.columnNumber, output, true);
+            addTag(rt_code + " failed with:\n\t" + err.message +"\n" + "Line: " + err.lineNumber + " Col: " + err.columnNumber, rt_output, true);
       	    editor.doc.setCursor(err.lineNumber, err.columnNumber);
 	    editor.focus();
 	} else {
-	    addTag(code + " failed with:\n\t" + err.message +"\n" + "Run it on Firefox to know the location of the error.", output, true);
+	    addTag(rt_code + " failed with:\n\t" + err.message, rt_output, true);
 	}
 	if (typeof failBeep === "function") failBeep();
     }};
