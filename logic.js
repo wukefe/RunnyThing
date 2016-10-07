@@ -49,11 +49,19 @@ function go(){
 	}
     } catch (err) {
 	if(err.lineNumber != undefined){
-            addTag(rt_code + " failed with:\n\t" + err.message +"\n" + "Line: " + err.lineNumber + " Col: " + err.columnNumber, rt_output, true);
+	    if(rt_show) {
+		addTag(rt_code + " failed with:\n\t" + err.message +"\n" + "Line: " + err.lineNumber + " Col: " + err.columnNumber, rt_output, true);
+	    } else {
+		addTag("Execution failed with:\n\t" + err.message +"\n" + "Line: " + err.lineNumber + " Col: " + err.columnNumber, rt_output, true);
+	    }
       	    editor.doc.setCursor(err.lineNumber, err.columnNumber);
 	    editor.focus();
 	} else {
-	    addTag(rt_code + " failed with:\n\t" + err.message, rt_output, true);
+	    if (rt_show) {
+		addTag(rt_code + " failed with:\n\t" + err.message, rt_output, true);
+	    } else {
+		addTag("Execution failed with:\n\t" + err.message, rt_output, true);
+	    }
 	}
 	if (typeof failBeep === "function") failBeep();
     }};
