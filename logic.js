@@ -32,6 +32,7 @@ function go(){
     rt_count++;
     var rt_show = document.getElementById("show_src").checked;
     var rt_fast = document.getElementById("fast_go").checked;
+    var rt_mute = document.getElementById("mute_sound").checked;
     var rt_output = document.getElementById("output");
     var rt_code = editor.getValue();
     var rt_libs = pre_editor.getValue();
@@ -47,6 +48,7 @@ function go(){
 	} else {
 	    addTag(rt_count + "> " + evaluation, rt_output);
 	}
+	if (typeof victorySound === "function" && !rt_mute) victorySound();
     } catch (err) {
 	if(err.lineNumber != undefined){
 	    if(rt_show) {
@@ -63,7 +65,7 @@ function go(){
 		addTag("Execution failed with:\n\t" + err.message, rt_output, true);
 	    }
 	}
-	if (typeof failBeep === "function") failBeep();
+	if (typeof failBeep === "function" && !rt_mute) failBeep();
     }};
 
 function cleanup() {
