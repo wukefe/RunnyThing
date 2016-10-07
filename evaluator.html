@@ -30,7 +30,7 @@
 	  <button onclick="cleanup();"> Clear </button>
 	  <button onclick="cleanupUser();"> Clear User Code </button>
 	  <input type="checkbox" id="show_src" checked><label for="show_src">Show source</label>
-	  <input type="checkbox" id="fast_go"><label for="fast_go">Fast go</label>
+	  <input type="checkbox" id="fast_go"><label for="fast_go">Clear output before go</label>
 	</div>
       </div>
       <div class="clearfix">
@@ -90,31 +90,31 @@
       element.appendChild(tag);
     }
 
-      function go(){
-      count++;
-      var show = document.getElementById("show_src").checked;
-      var fast = document.getElementById("fast_go").checked;
+function go(){
+    count++;
+    var show = document.getElementById("show_src").checked;
+    var fast = document.getElementById("fast_go").checked;
     var output = document.getElementById("output");
     var code = editor.getValue();
-      var libs = pre_editor.getValue();
-      var test = test_editor.getValue();
+    var libs = pre_editor.getValue();
+    var test = test_editor.getValue();
     try{
-      var evaluation = eval(libs+code+test);
-      if(fast_go){cleanup()}
-    if(show){
-    addTag( code + " -->\n\t" + evaluation, output);
-    } else {
-    addTag(count + "> " + evaluation, output);
-    }
+	var evaluation = eval(libs+code+test);
+	if(fast){cleanup()}
+	if(show){
+	    addTag( code + " -->\n\t" + evaluation, output);
+	} else {
+	    addTag(count + "> " + evaluation, output);
+	}
     } catch (err) {
-      if(err.lineNumber != undefined){
+	if(err.lineNumber != undefined){
             addTag(code + " failed with:\n\t" + err.message +"\n" + "Line: " + err.lineNumber + " Col: " + err.columnNumber, output, true);
       	    editor.doc.setCursor(err.lineNumber, err.columnNumber);
 	    editor.focus();
-	    } else {
+	} else {
 	    addTag(code + " failed with:\n\t" + err.message +"\n" + "Run it on Firefox to know the location of the error.", output, true);
-	    }
-	    if (typeof failBeep === "function") failBeep();
+	}
+	if (typeof failBeep === "function") failBeep();
     }};
 
     function cleanup() {
