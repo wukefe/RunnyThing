@@ -7,15 +7,55 @@
     <script src="epicsound.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/mode/javascript/javascript.min.js"></script>
+
+    <!-- Stylesheets -->
+    <link href="https://unpkg.com/basscss@8.0.2/css/basscss.min.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
   </head>
-  <body style="background:lightgray">
+  <body style="background:#E6E4E1; font-family: 'Open Sans', sans-serif;">
 
-    <h1>Write your code in the box, Think outside of the box!</h1>
-
-    <button onclick="go();"> Go </button>
-    <button onclick="cleanup();"> Clear </button>
-    <textarea class="left" id="source" style="display: table"> "write here" </textarea>
-    <div id="output" class="right"></div>
+    <div class="max-width-4 mx-auto">
+      <div class="clearfix">
+	<div class="col col-12">
+	  <h1 class="h1 align-middle" style="font-family: 'Bungee', cursive;">
+	    Runny Thing -- Versión Dos
+	  </h1>
+	</div>
+	<div class="col col-12">
+	  <button onclick="go();"> Go </button>
+	  <button onclick="cleanup();"> Clear </button>
+	  <button onclick="cleanupUser();"> Clear User Code </button>
+	</div>
+      </div>
+      <div class="clearfix">
+	<div class="col col-6 p1">
+	  <textarea class="left" id="source" style="display: table">/* user code */
+	  </textarea>
+	</div>
+	<div class="col col-6 p1">
+	  <p>Output:
+	  <div id="output"></div>
+	</div>
+      </div>
+      <div class="clearfix">
+	<div class="col col-6 p1">
+	  <textarea class="left" id="pre" style="display: table">/* definitions */</textarea>
+	</div>
+	<div class="col col-6 p1">
+	  <textarea class="left" id="test" style="display: table">/* tests */</textarea>
+	</div>
+      </div>
+	<div class="col col-12">
+	  <p> The execution is the result of concatenating the code in
+	  the definition pane (i.e.:lower left pane), with the user
+	    code in the top left pane, and finally the code in the test pane.
+	    The idea is to speed up the grading.
+	</div>
+    </div>
 
     <script>
       var editor = CodeMirror.fromTextArea(document.getElementById("source"), {
@@ -24,6 +64,21 @@
         continueComments: "Enter",
         extraKeys: {"Ctrl-Q": "toggleComment"}
       });
+
+      var pre_editor = CodeMirror.fromTextArea(document.getElementById("pre"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        continueComments: "Enter",
+        extraKeys: {"Ctrl-Q": "toggleComment"}
+      });
+
+      var test_editor = CodeMirror.fromTextArea(document.getElementById("test"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        continueComments: "Enter",
+        extraKeys: {"Ctrl-Q": "toggleComment"}
+      });
+
 
     function addTag(text, element, boom) {
       var tag = document.createElement("PRE");
@@ -35,9 +90,10 @@
     function go(){
     var output = document.getElementById("output");
     var code = editor.getValue();
-
+      var libs = pre_editor.getValue();
+      var test = test_editor.getValue();
     try{
-    var evaluation = eval(code);
+    var evaluation = eval(libs+code+test);
     addTag( code + " -->\n\t" + evaluation, output);
     } catch (err) {
       if(err.lineNumber != undefined){
@@ -54,6 +110,12 @@
     var output = document.getElementById("output");
     output.innerText = "";
     };
+
+    function cleanupUser() {
+	editor.doc.setValue("");
+    };
+
+
   </script>
 
 
