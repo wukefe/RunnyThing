@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> Run Javascript!, Run! </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.css">
+    <script src="epicsound.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.18.2/mode/javascript/javascript.min.js"></script>
+
+    <!-- Stylesheets -->
+    <link href="https://unpkg.com/basscss@8.0.2/css/basscss.min.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+  </head>
+  <body style="background:#E6E4E1; font-family: 'Open Sans', sans-serif;">
+
+    <div class="max-width-4 mx-auto">
+      <div class="clearfix">
+	<div class="col col-12">
+	  <h1 class="h1 align-middle" style="font-family: 'Bungee', cursive;">
+	    Runny Thing -- Versión Dos (A1)
+	  </h1>
+	</div>
+	<div class="col col-12">
+	  <button onclick="go();"> Go </button>
+	  <button onclick="cleanup();"> Clear </button>
+	  <button onclick="cleanupUser();"> Clear User Code </button>
+	  <input type="checkbox" id="show_src"><label for="show_src">Show source</label>
+	  <input type="checkbox" id="fast_go" checked><label for="fast_go">Clear output before go</label>
+	</div>
+      </div>
+      <div class="clearfix">
+	<div class="col col-6 p1">
+	  <textarea class="left" id="source" style="display: table">/* user code */
+	  </textarea>
+	</div>
+	<div class="col col-6 p1">
+	  <p>Output:
+	  <div id="output"></div>
+	</div>
+      </div>
+      <div class="clearfix">
+	<div class="col col-6 p1">
+	  <textarea class="left" id="pre" style="display: table">
+	    /* definitions */
+function cons(a,b) {
+    return function (selector) {
+        if (selector=='areyoualist?')
+            return 'yesIam';
+        return selector(a,b);
+    };
+}
+
+function car(list) {
+    function carHelper(a,b) {
+        return a;
+    }
+    return list(carHelper);
+}
+
+function cdr(list) {
+    function cdrHelper(a,b) {
+        return b;
+    }
+    return list(cdrHelper);
+}
+
+function isList(thing) {
+    if (typeof(thing)!='function')
+        return false;
+    try {
+        if (thing('areyoualist?')=='yesIam')
+        return true;
+    } catch(e) {
+    }
+    return false;
+}
+
+function show(list) {
+    var sval;
+    if (list==null)
+        sval = '()';
+    else if (isList(list))
+        sval = '('+ show(car(list)) +' '+show(cdr(list))+')';
+    else
+        sval = String(list);
+    return sval;
+}
+;
+
+function realCXR(s) {
+    function helper(s,func) {
+        if (s.length==0)
+            return func;
+        if (s.charAt(s.length-1)=='a') {
+            return helper(s.substr(0,s.length-1),function(pair) {
+                return car(func(pair));
+            });
+        } else if (s.charAt(s.length-1)=='d') {
+            return helper(s.substr(0,s.length-1),function(pair) {
+                return cdr(func(pair));
+            });
+        } else
+            throw "Funny character in input string: "+s.charAt(s.length-1);
+    }
+    // kick it off with an identify function
+    return helper(s,function(pair) { return pair; });
+}
+
+// Construct a random tree based on pairs constructed using cons.
+// Branches are deepened with probability p.
+// Returns an object, with a "tree" field containing the random tree,
+// and a "target" field containing a randomly selected, unique name
+// within the tree.
+function rndTree(p) {
+    // Keep track of all names used, so we can ensure they are unique,
+    // and also find a random name later too.
+    var allNames = [];
+    // The number of characters in a random string.
+    var nameLength = 5;
+
+    // Returns a random integer 0..max-1.
+    function rndInt(max) {
+        return Math.floor(Math.random() * max);
+    }
+
+    // Constructs a random string, as a tree element.
+    function rndString() {
+        // The set of characters from which the random name will be derived.
+        var alphas = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        // A recursive helper to progressively append n chars onto s.
+        function helper(n,s) {
+            if (n==0)
+                return s;
+            return helper(n-1,s + alphas.charAt(rndInt(alphas.length)));
+        }
+        var name = helper(nameLength,'');
+        // Here we ensure the name just constructed is unique within the tree,
+        // and if not we try again recursively.
+        if (allNames.indexOf(name)>=0)
+            return rndString();
+        // Ok, unique, so record the name.
+        allNames.push(name);
+        return name;
+    }
+
+    // This function actually constructs the random tree, recursively deepening either the
+    // first or second of the pair with probability p.
+    function rndTreeHelper(p) {
+        return cons(
+            (Math.random()<p) ? rndTreeHelper(Math.max(0,p-0.01)) : rndString(),
+            (Math.random()<p) ? rndTreeHelper(Math.max(0,p-0.01)) : null);
+    }
+
+    var t = rndTreeHelper(p);
+
+    return { target: allNames[rndInt(allNames.length)],
+             tree: t };
+}
+
+function assert(condition, message) {
+    if (!condition) {
+        message = message || "Assertion failed";
+        if (typeof Error !== "undefined") {
+            throw new Error(message);
+        }
+        throw message; // Fallback
+    }
+}
+;
+	  </textarea>
+	</div>
+	<div class="col col-6 p1">
+	  <textarea class="left" id="test" style="display: table">
+
+/* Tests for questions 1 to 3 */
+
+if(typeof cXXXr === 'undefined') {
+    addTag("Replaced cXXXR", rt_output);
+    var cXXXr = realCXR;
+}
+
+
+// Question 1
+
+var t0 = cons("1", (cons ("2", cons(cons(cons("3" , "4"), "5"), null))));
+var t1 = cons("1", "2");
+
+
+try{assert(cXXXr("a")(t0) == "1", "-1-");} catch (e) { addTag("Failed Q1-1" + e.message, rt_output); }
+try{assert(cXXXr("ad")(t0) == "2", "-2-");} catch (e) { addTag("Failed Q1-2", rt_output); }
+try{assert(cXXXr("aaadd")(t0) == "3", "-3-");} catch (e) { addTag("Failed Q1-3", rt_output); }
+try{assert(cXXXr("daadd")(t0) == "4", "-4-");} catch (e) { addTag("Failed Q1-4", rt_output); }
+try{assert(cXXXr("dadd")(t0) == "5", "-5-");} catch (e) { addTag("Failed Q1-5", rt_output); }
+try{assert(cXXXr("ddd")(t0) == null, "-null-");} catch (e) { addTag("Failed Q1-null", rt_output); }
+try{assert(cXXXr("")(1) == 1, "-empty-");} catch (e) { addTag("Failed Q1-empty", rt_output); }
+
+
+// Question 2
+
+var errorCount = 0;
+var passedCount = 0;
+for (i = 0; i < 1000 ; i++)
+{
+    var rt = rndTree(0.6);
+    try{
+        var res = makeXXX(rt.tree, rt.target);
+        if(realCXR(res)(rt.tree) == rt.target){passedCount++} else {errorCount++}
+    } catch (e) { /* addTag(e.message, rt_output) ; */  errorCount ++}
+
+}
+
+addTag("Error: "+ errorCount + " Success: " + passedCount, rt_output);
+
+// Question 3
+
+
+addTag("Correct:\n"+ show(t0), rt_output);
+try{addTag(show(wohs(show(t0))), rt_output)} catch (e) { addTag("Failed printing t0: "+ e.message, rt_output); }
+addTag("Correct:\n"+ show(t1), rt_output);
+try{addTag(show(wohs(show(t1))), rt_output)} catch (e) { addTag("Failed printing t0: "+ e.message, rt_output); }
+try{assert(show(wohs(show(t0))) == show(t0));} catch (e) { addTag("Failed Show-0", rt_output); }
+try{assert(show(wohs(show(t1))) == show(t1));} catch (e) { addTag("Failed Show-1", rt_output); }
+try{assert(wohs("()") == null);} catch (e) { addTag("Failed Show-2", rt_output); }
+
+/* Tests for 4 and 5 */
+
+var x = cons("a",cons("b",cons("c",cons("d",null))));
+var sel = function (n) { return n=="b" || n=="d"; };
+var sel2 = function (n) { return n=="a" || n=="A"; };
+var sel3 = function (n) { return n=="c" || n=="b"; };
+var sel4 = function (n) { return n=="x"; };
+
+addTag("M1=((b (d ())) ())", rt_output)
+try{addTag("R1="+ show(partition(x,sel)), rt_output) } catch (e) {addTag("R1 Failed with:"+e.message, rt_output)}
+addTag("M2=((b (d ())) ((a ()) ((b (c ())) (() ()))))", rt_output)
+try{addTag("R2="+ show(partition(x,sel,sel2,sel3,sel4)), rt_output) } catch (e) {addTag("R2 Failed with:"+e.message, rt_output)}
+addTag("M3=(() ())", rt_output)
+try{addTag("R3="+  show(partition(x,sel4)), rt_output) } catch (e) {addTag("R3 Failed with:"+e.message, rt_output)}
+
+
+
+// question 5
+
+function test () {
+    var getCount = 0;
+    try {
+        var dict = addAA(addAA(constructAA(), "k", 3), "yass", 4001);
+        addTag("Construction +1", rt_output);
+    } catch (e) { addTag("Failed with: " + e.message, rt_output);  }
+
+    try {
+        addTag("Dict:\n"+ showAA(dict), rt_output);
+    } catch (e) { addTag("Failed with: " + e.message, rt_output);  }
+
+    try {
+        assert(getValueAA(dict, "foo")==null, "get null");
+        getCount++;
+    } catch (e) { addTag("foo Failed with: " + e.message, rt_output);  }
+
+    try {
+        assert(getValueAA(dict, "k")==3, "get k");
+        getCount++;
+    } catch (e) { addTag("k Failed with: " + e.message, rt_output);  }
+
+    try {
+        assert(getValueAA(dict, "yass")==4001, "get yass");
+        getCount++;
+    } catch (e) { addTag("yass Failed with: " + e.message, rt_output);  }
+
+    addTag("getCout = " + getCount, rt_output);
+}
+
+test()
+	  </textarea>
+	</div>
+      </div>
+	<div class="col col-12">
+	  <p> The execution is the result of concatenating the code in
+	  the definition pane (i.e.:lower left pane), with the user
+	    code in the top left pane, and finally the code in the test pane.
+	    The idea is to speed up the grading.
+	</div>
+	<div class="col col-12">
+	  <h3>Options</h3>
+	  <input type="checkbox" id="mute_sound"><label for="mute_sound">Mute Sound</label>
+	</div>
+    </div>
+
+    <script src="logic.js"></script>
+</body>
+</html>
