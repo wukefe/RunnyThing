@@ -4,8 +4,8 @@ A Silly Tool to Run Javascript
 ### Tests for assignment #3
 
 - [Question 2](https://wukefe.github.io/RunnyThing/a3q2.html)
-- [Question 3](https://wukefe.github.io/RunnyThing/a3q2.html)
-- [Question 4](https://wukefe.github.io/RunnyThing/a3q2.html)
+- [Question 3](https://wukefe.github.io/RunnyThing/a3q3.html)
+- [Question 4](https://wukefe.github.io/RunnyThing/a3q4.html)
 
 ### Rubric
 
